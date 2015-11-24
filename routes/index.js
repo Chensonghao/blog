@@ -10,6 +10,7 @@
 
 var crypto = require('crypto');
 var User = require('../models/user');
+var Post = require('../models/post');
 
 function checkLogin(req, res, next) {
     if (!req.session.user) {
@@ -28,11 +29,17 @@ function checkNotLogin(req, res, next) {
 }
 module.exports = function(app) {
     app.get('/', function(req, res) {
-        res.render('index', {
-            title: '主页',
-            error: req.flash('error').toString(),
-            success: req.flash('success').toString(),
-            user: req.session.user
+        Post.get(null, function(err, posts) {
+            if (err) {
+                posts = []
+            }
+            res.render('index', {
+                title: '主页',
+                error: req.flash('error').toString(),
+                success: req.flash('success').toString(),
+                user: req.session.user,
+                posts:posts
+            });
         });
     });
 
@@ -116,18 +123,29 @@ module.exports = function(app) {
             res.redirect('/');
         });
     });
+
     app.get('/post', checkLogin);
-    app.get('/post', function(res, req) {
-        res.render('post',{
-            title:'发表',
-            user:req.session.user,
-            error:req.flash('error').toString(),
-            success:req.falsh('success').toString()
+    app.get('/post', function(req, res) {
+        res.render('post', {
+            title: '发表',
+            user: req.session.user,
+            error: req.flash('error').toString(),
+            success: req.flash('success').toString()
         });
     });
-    app.post('/post', checkLogin);
-    app.post('/post', function(res, req) {
 
+    app.post('/post', checkLogin);
+    app.post('/post', function(req, res) {
+        var user = req.session.user;
+        var post = new Post(user.name, req.body.title, req.body.post);
+        post.save(function(err) {
+            if (err) {
+                req.flash('error', err);
+                return res.redirect('/');
+            }
+            req.flash('error', '发表成功');
+            return res.redirect('/');
+        });
     });
 
     app.get('logout', checkLogin);
