@@ -7,10 +7,38 @@
 // });
 
 // module.exports = router;
-
 var crypto = require('crypto');
 var User = require('../models/user');
 var Post = require('../models/post');
+var multer = require('multer');
+
+var storage = multer.diskStorage({
+    destination: function(req, file, cb) {
+        cb(null, './public/images')
+    },
+    filename: function(req, file, cb) {
+        var fileFormat = (file.originalname).split(".");
+        cb(null, file.originalname + '-' + Date.now() + "." + fileFormat[fileFormat.length - 1]);
+    }
+});
+var uploadFile = multer({
+    storage: storage
+        // limits: {
+        //     fieldSize: 1024,
+        //     fileSize: 1024 * 1024 * 10
+        // },
+        // fileFilter: function(req, file, cb) {
+        //     // To reject this file pass `false`, like so:
+        //     //cb(null, false);
+
+    //     // To accept the file pass `true`, like so:
+    //     cb(null, true)
+
+    //     // You can always pass an error if something goes wrong:
+    //     //cb(new Error('I don\'t have a clue!'))
+    // }
+}).array('file', 5);
+
 
 function checkLogin(req, res, next) {
     if (!req.session.user) {
@@ -38,7 +66,7 @@ module.exports = function(app) {
                 error: req.flash('error').toString(),
                 success: req.flash('success').toString(),
                 user: req.session.user,
-                posts:posts
+                posts: posts
             });
         });
     });
@@ -146,6 +174,41 @@ module.exports = function(app) {
             req.flash('error', '发表成功');
             return res.redirect('/');
         });
+    });
+
+    app.get('/upload', checkLogin);
+    app.get('/upload', function(req, res) {
+        res.render('upload', {
+            title: "上传",
+            user: req.session.user,
+            success: req.flash('success').toString(),
+            error: req.flash('error').toString()
+        });
+    });
+
+    app.post('/upload', checkLogin);
+    app.post('/upload', function(req, res) {
+        uploadFile(req, res, function(err) {
+            if (err) {
+                req.flash('error', '上传失败!');
+                console.log(err);
+            } else {
+                req.flash('success', '文件上传成功！');
+            }
+            res.redirect('/upload');
+        });
+
+        // var tmp_path = req.file.path;
+        // var target_path = 'uploads/' + req.file.originalname;
+        // var src = fs.createReadStream(tmp_path);
+        // var dest = fs.createWriteStream(target_path);
+        // src.pipe(dest);
+        // src.on('end', function() {
+        //     res.render('complete');
+        // });
+        // src.on('error', function(err) {
+        //     res.render('error');
+        // });
     });
 
     app.get('logout', checkLogin);

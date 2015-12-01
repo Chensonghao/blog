@@ -1,0 +1,16 @@
+{
+  "name": "Blog",
+  "version": "0.0.1",
+  "authors": ["Evan.S.Chen"],
+  "main": "app.js",
+  "license": "free",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "components"
+  ],
+  "dependencies": {
+    "bootstrap": "~3.1.1"
+  }
+}
