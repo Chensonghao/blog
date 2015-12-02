@@ -28,6 +28,7 @@ app.use(bodyParser.urlencoded({
 }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+app.use('/components', express.static(__dirname + '/components'));
 
 app.use(flash());
 app.use(session({
