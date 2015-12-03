@@ -1,8 +1,8 @@
 <%- include header %>
 <% if(user&&user.name==post.name){ %>
 <p>
-	<a href="/edit/<%= post.name %>/<%= post.time.day %>/<%= post.title %>" class="edit">编辑</a>
-	<a href="/remove/<%= post.name %>/<%= post.time.day %>/<%= post.title %>" class="edit">删除</a>
+	<a href="/edit/<%= post.name %>/<%= post._id %>" class="edit">编辑</a>
+	<a href="/remove/<%= post.name %>/<%= post._id %>" class="edit">删除</a>
 </p>
 <% } %>
 <p class="info">
@@ -12,4 +12,5 @@
 <p>
 	<%- post.post %>
 </p>
+<%- include comment %>
 <%- include footer %>

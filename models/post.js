@@ -1,5 +1,6 @@
 var mongodb = require('./db'),
-    markdown = require('markdown').markdown;
+    markdown = require('markdown').markdown,
+    ObjectID = require('mongodb').ObjectID;
 
 
 function Post(name, title, post) {
@@ -13,19 +14,21 @@ Post.prototype.save = function(callback) {
         year = date.getFullYear(),
         month = date.getMonth() + 1,
         day = date.getDate(),
+        hour = date.getHours(),
         minute = date.getMinutes();
     var time = {
         date: date,
         year: year,
         month: year + '-' + month,
         day: year + '-' + month + '-' + day,
-        minute: year + '-' + month + '-' + day + ' ' + date.getHours() + ':' + (minute < 10 ? '0' + minute : minute)
+        minute: year + '-' + month + '-' + day + ' ' + (hour < 10 ? '0' + hour : hour) + ':' + (minute < 10 ? '0' + minute : minute)
     }
     var post = {
         name: this.name,
         title: this.title,
         post: this.post,
-        time: time
+        time: time,
+        comments: []
     }
     mongodb.open(function(err, db) {
         if (err) {
@@ -79,7 +82,7 @@ Post.getAll = function(name, callback) {
     });
 }
 
-Post.getOne = function(name, day, title, callback) {
+Post.getOne = function(name, id, callback) {
     mongodb.open(function(err, db) {
         if (err) {
             return callback(err);
@@ -91,21 +94,23 @@ Post.getOne = function(name, day, title, callback) {
             }
             collection.findOne({
                 "name": name,
-                "time.day": day,
-                "title": title
+                "_id": ObjectID(id)
             }, function(err, doc) {
                 mongodb.close();
                 if (err) {
                     return callback(err);
                 }
                 doc.post = markdown.toHTML(doc.post);
+                doc.comments.forEach(function(comment) {
+                    comment.content = markdown.toHTML(comment.content);
+                });
                 return callback(null, doc);
             });
         });
     });
 }
 
-Post.edit = function(name, day, title, callback) {
+Post.edit = function(name, id, callback) {
     mongodb.open(function(err, db) {
         if (err) {
             return callback(err);
@@ -116,9 +121,8 @@ Post.edit = function(name, day, title, callback) {
                 return callback(err);
             }
             collection.findOne({
-                "title": title,
-                "name": name,
-                "time.day": day
+                "_id": ObjectID(id),
+                "name": name
             }, function(err, doc) {
                 mongodb.close();
                 if (err) {
@@ -129,7 +133,7 @@ Post.edit = function(name, day, title, callback) {
         });
     });
 }
-Post.update = function(name, day, title, post, callback) {
+Post.update = function(name, id, post, callback) {
     mongodb.open(function(err, db) {
         if (err) {
             return callback(err);
@@ -140,12 +144,11 @@ Post.update = function(name, day, title, post, callback) {
                 return callback(err);
             }
             collection.update({
-                "title": title,
-                "name": name,
-                "time.day": day
+                "_id": ObjectID(id),
+                "name": name
             }, {
                 $set: {
-                    post: post
+                    "post": post
                 }
             }, function(err) {
                 mongodb.close();
@@ -157,7 +160,7 @@ Post.update = function(name, day, title, post, callback) {
         });
     });
 }
-Post.remove = function(name, day, title, callback) {
+Post.remove = function(name, id, callback) {
     mongodb.open(function(err, db) {
         if (err) {
             return callback(err);
@@ -168,11 +171,12 @@ Post.remove = function(name, day, title, callback) {
                 return callback(err);
             }
             collection.remove({
-                "title": title,
-                "name": name,
-                "time.day": day
+                "_id": ObjectID(id),
+                "name": name
             }, {
-                w: 1
+                w: 1,
+                j: true,
+                safe: true
             }, function(err) {
                 mongodb.close();
                 if (err) {
