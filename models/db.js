@@ -1,10 +1,18 @@
 var settings = require('../settings'),
-    mongodb = require('mongodb'),
-    db = mongodb.Db,
-    connection = mongodb.Connection,
-    server = mongodb.Server;
+    mongoose = require('mongoose'),
+    schema = mongoose.Schema;
 
-module.exports = new db(settings.db, new server(settings.host, settings.port), {
-    safe: true
+var uri = 'mongodb://' + settings.host + ':' + settings.port + '/' + settings.db;
+mongoose.connect(uri, {
+    //user: '',
+    //pass: '',
+    server: {
+        auto_reconnect: true,
+        poolSize: 10
+    }
 });
 
+module.exports = function(collection, obj) {
+    var newSchema = new schema(obj);
+    return mongoose.model(collection, newSchema);
+}

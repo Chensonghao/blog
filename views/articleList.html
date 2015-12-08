@@ -1,0 +1,13 @@
+<div class="panel panel-default" ng-hide="list.errorMsg">
+    <div class="panel-heading">
+        <span ng-hide="list.isUserPage">全部帖子</span>
+        <span ng-show="list.isUserPage">{{list.name}}的话题列表</span>
+    </div>
+    <ul class="list-group">
+        <li class="list-group-item" ng-repeat="article in list.articles">
+            <a class="blog-article" href="javascript:;" ng-bind="article.title" ng-click="list.viewArticle(article.name,article._id)"></a>
+            <div ng-bind="article.time | date :'yyyy/MM/dd HH:mm' "></div>
+        </li>
+    </ul>
+</div>
+<div class="alert alert-danger" role="alert" ng-bind="list.errorMsg" ng-show="list.errorMsg"></div>

@@ -1,83 +1,183 @@
-var mongodb = require('./db');
+var mongodb = require('./db'),
+    crypto = require('crypto'),
+    jwt = require("jsonwebtoken"),
+    settings = require('../settings'),
+    collection = mongodb('users', {
+        name: {
+            type: String,
+            required: true
+        },
+        password: {
+            type: String,
+            required: true
+        },
+        email: {
+            type: String,
+            required: false
+        },
+        token: {
+            type: String,
+            required: false
+        }
+    });
 
-
-/*-------------------mongoose--------------*/
-// var mongoose = require('mongoose'),
-//     schema = mongoose.Schema;
-
-// var userSchema = new schema({
-//     name: {
-//         type: String,
-//         required: true
-//     },
-//     password: {
-//         type: String,
-//         required: true
-//     },
-//     email: {
-//         type: String,
-//         required: false
-//     }
-// });
-// var userModel=mongoose.model('users',userSchema);
-// mongoose.connect('mongodb://127.0.0.1:27017/blog');
-/*------------------------------------------*/
-
-function User(user) {
-    this.name = user.name;
-    this.password = user.password;
-    this.email = user.email;
-}
-module.exports = User;
-
-User.prototype.save = function(callback) {
-    var user = {
-        name: this.name,
-        password: this.password,
-        email: this.email
-    };
-    mongodb.open(function(err, db) {
+function getuser(name, callback) {
+    collection.findOne({
+        name: name
+    }, function(err, user) {
         if (err) {
             return callback(err);
         }
-        db.collection('users', function(err, collection) {
-            if (err) {
-                mongodb.close();
-                return callback(err);
-            }
-            collection.insert(user, {
-                safe: true
-            }, function(err) {
-                mongodb.close();
-                if (err) {
-                    mongodb.close();
-                    return callback(err);
-                }
-                return callback(null, user);
-            });
-        });
+        return callback(null, user);
     });
-};
+}
 
-User.get = function(name, callback) {
-    mongodb.open(function(err, db) {
+function updateUserToken(user, callback) {
+    user.token = jwt.sign({
+        name: user.name,
+        password: user.password
+    }, settings.tokenSecret, {
+        expiresIn: 60 * 30
+    });
+    user.save(function(err, user1) {
         if (err) {
+            console.log(err);
             return callback(err);
         }
-        db.collection('users', function(err, collection) {
+        return callback(null, user1);
+    });
+}
+
+exports.register = function(req, res) {
+    var name = req.body.name;
+    getuser(name, function(err, user) {
+        if (err) {
+            console.log(err);
+            return res.json({
+                type: false,
+                message: err.toString()
+            });
+        }
+        if (user) {
+            return res.json({
+                message: "用户名已存在。"
+            });
+        }
+        var md5 = crypto.createHash('md5'),
+            password = md5.update(req.body.password).digest('hex');
+        var user = new collection({
+            name: name,
+            password: password,
+            email: req.body.email
+        });
+        user.save(function(err, user) {
             if (err) {
-                mongodb.close();
-                return callback(err);
+                console.log(err);
+                return res.json({
+                    type: false,
+                    message: err.toString()
+                });
             }
-            collection.findOne({
-                name: name
-            }, function(err, user) {
-                mongodb.close();
+            updateUserToken(user, function(err, user1) {
                 if (err) {
-                    return callback(err);
+                    console.log(err);
+                    return res.json({
+                        err: err
+                    });
                 }
-                callback(null, user);
+                return res.json({
+                    user: user1
+                })
             });
         });
     });
 }
+exports.login = function(req, res) {
+    var name = req.body.name,
+        md5 = crypto.createHash('md5'),
+        password = md5.update(req.body.password).digest('hex');
+    getuser(name, function(err, user) {
+        if (err) {
+            console.log(err);
+            return res.json({
+                type: false,
+                message: err.toString()
+            });
+        }
+        if (user && password === user.password) {
+            updateUserToken(user, function(err, user1) {
+                if (err) {
+                    console.log(err);
+                    return res.json({
+                        err: err
+                    });
+                }
+                return res.json({
+                    user: user1
+                })
+            });
+        } else {
+            return res.json({
+                type: false,
+                message: '用户名或密码错误！'
+            });
+
+        }
+    });
+}
+
+exports.authorize = function(req, res, next) {
+    var bearerHeader = req.headers['authorization'];
+    var username = req.headers['username'];
+    if (bearerHeader) {
+        var bearer = bearerHeader.split(' ');
+        var token = bearer[1];
+        jwt.verify(token, settings.tokenSecret, function(err, decoded) {
+            if (err) {
+                console.log(err);
+                res.send(401);
+            } else {
+                //req.token = token;
+                getuser(username, function(err, user) {
+                    if (err || user.token !== token) {
+                        console.log(err || 'token不匹配！');
+                        res.send(401);
+                    } else {
+                        updateUserToken(user, function(err, user1) {
+                            if (err) {
+                                console.log(err);
+                                res.send(401);
+                            } else {
+                                res.setHeader('authorization', bearer[0] + ' ' + user1.token);
+                                next();
+                            }
+                        });
+                    }
+                });
+            }
+        });
+    } else {
+        res.send(401);
+    }
+}
+
+exports.unAuthorize = function(req, res, next) {
+    var bearerHeader = req.headers['authorization'];
+    if (bearerHeader) {
+        var bearer = bearerHeader.split(' ');
+        var token = bearer[1];
+        jwt.verify(token, settings.tokenSecret, function(err, decoded) {
+            if (err) {
+                console.log(err);
+                res.setHeader('authorization', null);
+                next();
+            } else {
+                res.send(403);
+            }
+        });
+    } else {
+        next();
+    }
+}
+
+exports.getUser = getuser;

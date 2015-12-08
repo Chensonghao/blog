@@ -1,0 +1,26 @@
+<header>
+    <nav class="navbar navbar-inverse" role="navigation" style="width:100%;border-radius:0;padding-left:30px;">
+        <div class="container" style="padding-left:15px;">
+            <div class="navbar-header">
+                <a class="navbar-brand" ui-sref="index">Blog</a>
+            </div>
+            <ul class="nav navbar-nav navbar-right">
+                <li>
+                    <a ui-sref="index">首页</a>
+                </li>
+                <li ng-show="header.nologin">
+                    <a ui-sref="index.login">登录</a>
+                </li>
+                <li ng-show="header.nologin">
+                    <a ui-sref="index.register">注册</a>
+                </li>
+                <li ng-hide="header.nologin">
+                    <a ui-sref="index.setting">设置</a>
+                </li>
+                <li ng-hide="header.nologin">
+                    <a href="javascript:;" ng-click="header.logout()">退出</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+</header>

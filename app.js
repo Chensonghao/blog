@@ -5,13 +5,10 @@ var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var routes = require('./routes/index');
-var users = require('./routes/users');
 
 var session = require('express-session');
-var flash = require('connect-flash');
 var settings = require('./settings');
 var mongoStore = require('connect-mongo')(session);
-
 var app = express();
 
 // view engine setup
@@ -20,7 +17,7 @@ app.set('view engine', 'ejs');
 app.set('port', process.env.PORT || 3000);
 
 // uncomment after placing your favicon in /public
-//app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
+//app.use(favicon(__dirname + '/public/favicon.ico'));
 app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({
@@ -28,12 +25,12 @@ app.use(bodyParser.urlencoded({
 }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
-app.use('/components', express.static(__dirname + '/components'));
+app.use('/components', express.static(path.join(__dirname, 'components')));
+app.engine('html', require('ejs').renderFile);
 
-app.use(flash());
 app.use(session({
     secret: settings.cookieSecret,
-    key: settings.db, //cookie name
+    key: settings.db, 
     cookie: {
         maxAge: 1000 * 60 * 60 * 24 * 30 //30 days
     },
@@ -43,10 +40,7 @@ app.use(session({
         port: settings.port
     })
 }));
-
-//app.use('/', routes);
 routes(app);
-//app.use('/users', users);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
@@ -78,8 +72,9 @@ app.use(function(err, req, res, next) {
         error: {}
     });
 });
+
+
 var port = app.get('port');
 app.listen(port, function() {
-    console.log('server is listening on port ' + port);
+    console.log('server is listening on port: ' + port);
 });
-//module.exports = app;

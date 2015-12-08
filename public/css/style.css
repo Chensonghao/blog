@@ -1,0 +1,36 @@
+body {
+    font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+}
+
+.blog-article {
+	font-size: 18px;
+    max-width: 70%;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    display: inline-block;
+}
+.blog-article ~ div{
+	 display: inline-block;
+	 float: right;
+}
+#editor{
+	display: none;
+}
+.mk{
+    padding:0;
+}
+.mk ul{
+    list-style: none;
+    margin-left: 0;
+    padding-left: 0;
+}
+.mk li{
+    padding:10px 5px;
+}
+.error{
+    color:red;
+}
+.fg-gray{
+    color:gray;
+}

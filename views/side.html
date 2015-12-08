@@ -1,0 +1,12 @@
+<div class="panel panel-default">
+    <div class="panel-heading" ng-bind="side.title"></div>
+    <div class="panel-body">
+        <p ng-bind="side.name" ng-show="side.showUser"></p>
+        <a ui-sref="index.login" class="btn btn-primary" ng-show="side.showLoginBtn">登录</a>
+    </div>
+</div>
+<div class="panel panel-default" ng-show="side.showPostBtn">
+    <div class="panel-body">
+        <a ui-sref="index.post" class="btn btn-primary">发布话题</a>
+    </div>
+</div>
