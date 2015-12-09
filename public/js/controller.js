@@ -14,9 +14,9 @@ angular.module('Blog')
 
     }]);
 
-LoginCtrl.$inject = ['BlogService', '$localStorage', '$location'];
+LoginCtrl.$inject = ['BlogService', '$localStorage', '$rootScope', '$state'];
 /*@ngInject*/
-function LoginCtrl(BlogService, $localStorage, $location) {
+function LoginCtrl(BlogService, $localStorage, $rootScope, $state) {
     var vm = this;
     vm.errorMsg = '';
     vm.login = function() {
@@ -30,7 +30,12 @@ function LoginCtrl(BlogService, $localStorage, $location) {
                     name: user.name,
                     token: user.token
                 };
-                $location.path('/');
+                console.log($rootScope.previousState);
+                if ($rootScope.previousState) {
+                    $state.go($rootScope.previousState, $rootScope.previousParams)
+                } else {
+                    $state.go('index')
+                }
             } else {
                 console.log(res.data.err || res.data.message);
                 vm.errorMsg = res.data.message || '登陆发成错误。';
@@ -75,15 +80,45 @@ function RegisterCtrl(BlogService, $localStorage, $location) {
     }
 }
 
-SettingCtrl.$inject = ['BlogService', 'FileReader','$scope'];
+SettingCtrl.$inject = ['BlogService', 'FileReader', '$scope', '$http'];
 /*@ngInject*/
-function SettingCtrl(BlogService, FileReader,$scope) {
+function SettingCtrl(BlogService, FileReader, $scope, $http) {
     $scope.getFile = function() {
         FileReader.readAsDataUrl($scope.file, $scope)
             .then(function(result) {
                 $scope.imageSrc = result;
+                $('#imgPreview').imgAreaSelect({
+                    aspectRatio: "1:1",
+                    handles: true,
+                    // x1: 0,
+                    // y1: 0,
+                    // x2: 48,
+                    // y2: 48,
+                    minWidth: 48,
+                    minHeight: 48,
+                    onSelectEnd: function(img, selection) {
+                        $('input[name="x1"]').val(selection.x1);
+                        $('input[name="y1"]').val(selection.y1);
+                        $('input[name="x2"]').val(selection.x2);
+                        $('input[name="y2"]').val(selection.y2);
+                    }
+                });
             });
     };
+    $scope.upload = function() {
+        var fd = new FormData();
+        fd.append("f", "qq");
+        fd.append("file", $scope.myFile);
+        $http({
+            method: 'POST',
+            url: '/imgUpload',
+            data: fd,
+            headers: {
+                'Content-Type': undefined
+            },
+            transformRequest: angular.identity
+        });
+    }
 }
 
 ArticleCtrl.$inject = ['BlogService', 'pubSubService', '$location'];
@@ -129,19 +164,29 @@ function ListCtrl(BlogService, $location) {
         vm.isUserPage = true;
         vm.name = name;
     }
-    BlogService.getAllArticles(name).then(function(data) {
-        if (data.data === false) {
-            vm.errorMsg = '发生错误。';
-        }
-        if (data.data.user === false) {
-            vm.errorMsg = '该用户不存在。';
-        } else {
-            vm.articles = data.data;
-        }
-    }, function(err) {
-        console.log(err);
-        vm.articles = [];
-    });
+    vm.currentPage = 1;
+    vm.pageChanged = function() {
+        initArticles();
+    }
+    initArticles();
+
+    function initArticles() {
+        BlogService.getAllArticles(vm.currentPage - 1, name).then(function(res) {
+            var data = res.data;
+            if (data === false) {
+                vm.errorMsg = '发生错误。';
+            }
+            if (data.user === false) {
+                vm.errorMsg = '该用户不存在。';
+            } else {
+                vm.articles = data.articles;
+                vm.articleCount = data.count;
+            }
+        }, function(err) {
+            console.log(err);
+            vm.articles = [];
+        });
+    }
 }
 
 HeaderCtrl.$inject = ['$localStorage', '$location'];
@@ -158,9 +203,9 @@ function HeaderCtrl($localStorage, $location) {
     }
 }
 
-SideCtrl.$inject = ['$localStorage', 'pubSubService', '$location', '$scope'];
+SideCtrl.$inject = ['$localStorage', 'pubSubService', '$location', '$state'];
 /*@ngInject*/
-function SideCtrl($localStorage, pubSubService, $location, $scope) {
+function SideCtrl($localStorage, pubSubService, $location, $state) {
     var vm = this;
     var params = $location.path().split('/'),
         user = $localStorage.user,
@@ -171,6 +216,11 @@ function SideCtrl($localStorage, pubSubService, $location, $scope) {
     vm.showUser = false;
     vm.showLoginBtn = false;
     vm.showPostBtn = isLogin;
+    vm.stateToUser = function() {
+        $state.go('index.user', {
+            name: vm.name
+        });
+    }
 
     /*如果是文章页面－－显示作者信息*/
     if (params.length == 4 && params[1] == 'user' && params[3].length > 0) {

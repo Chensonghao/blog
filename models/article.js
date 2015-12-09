@@ -37,32 +37,47 @@ function queryArticles(query, callback) {
 exports.getAllArticles = function(req, res) {
     var user = require('./user');
     var query = {},
-        username = req.params.name;
+        username = req.params.name,
+        index = req.params.index;
     if (username) {
         query.name = username;
     }
-    collection.find(query, function(err, docs) {
+    collection.count(function(err, count) {
         if (err) {
             console.log(err);
             return res.json(false);
         }
-        if (docs.length > 0) {
-            return res.json(docs);
-        } else if (username) {
-            user.getUser(username, function(err, user) {
-                if (err) {
-                    console.log(err);
-                    return res.json(false);
-                }
-                if (!user) {
-                    return res.json({
-                        user: false
-                    });
-                }
-            });
-        }
-    }).sort({
-        time: -1
+        collection.find(query, function(err, docs) {
+            if (err) {
+                console.log(err);
+                return res.json(false);
+            }
+            if (docs.length > 0) {
+                return res.json({
+                    count: count,
+                    articles: docs
+                });
+            } else if (username) {
+                user.getUser(username, function(err, user) {
+                    if (err) {
+                        console.log(err);
+                        return res.json(false);
+                    }
+                    if (!user) {
+                        return res.json({
+                            user: false
+                        });
+                    } else {
+                        return res.json({
+                            count: 0,
+                            articles: []
+                        });
+                    }
+                });
+            }
+        }).sort({
+            time: -1
+        }).skip(index * 20).limit(20);
     });
 }
 exports.getArticle = function(req, res) {

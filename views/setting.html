@@ -1,4 +1,17 @@
-<input type="file" file-model="myFile"/>
-<div class="col-md-12">
-    <img ng-src="{{imageSrc}}" style="max-width:300px;max-height:300px;margin:0 auto;display:block;" />
+<div class="panel panel-default">
+    <div class="panel-heading">头像上传</div>
+    <div class="panel-body" style="min-height:300px;">
+        <div class="col-md-4">
+            <input type="file" file-model="myFile" accept="image/*" class="btn btn-default" />
+            <input type="hidden" name="x1" value="" />
+            <input type="hidden" name="y1" value="" />
+            <input type="hidden" name="x2" value="" />
+            <input type="hidden" name="y2" value="" />
+        </div>
+        <div class="col-md-8 text-center">
+            <img id="imgPreview" ng-src="{{imageSrc}}" />
+            <br>
+            <button class="btn btn-primary" ng-click="upload()" ng-show="imageSrc">&nbsp;上传&nbsp;</button>
+        </div>
+    </div>
 </div>

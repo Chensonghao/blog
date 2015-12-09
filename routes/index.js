@@ -1,4 +1,4 @@
-var Post = require('../models/post'),
+var Article = require('../models/article'),
     User = require('../models/user');
 
 module.exports = function(app) {
@@ -38,11 +38,11 @@ module.exports = function(app) {
         res.render('markdown.html');
     });
 
-
+    app.post('/imgUpload', User.upload);
     app.post('/user/register', User.register);
     app.post('/user/login', User.login);
-    app.get('/post/getArticle/:name/:id', Post.getArticle);
-    app.get('/post/getAllArticles', Post.getAllArticles);
-    app.get('/post/getAllArticles/:name', Post.getAllArticles);
-    app.post('/post/postArticle', User.authorize, Post.postArticle);
+    app.get('/post/getArticle/:name/:id', Article.getArticle);
+    app.get('/post/getAllArticles/:index', Article.getAllArticles);
+    app.get('/post/getAllArticles/:index/:name', Article.getAllArticles);
+    app.post('/post/postArticle', User.authorize, Article.postArticle);
 };

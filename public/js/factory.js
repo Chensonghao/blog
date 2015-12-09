@@ -9,7 +9,6 @@ angular.module('Blog')
                 });
             };
         };
-
         var onError = function(reader, deferred, scope) {
             return function() {
                 scope.$apply(function() {
@@ -17,21 +16,16 @@ angular.module('Blog')
                 });
             };
         };
+        var readAsDataURL = function(file, scope) {
+            var deferred = $q.defer();
 
-        var getReader = function(deferred, scope) {
             var reader = new FileReader();
             reader.onload = onLoad(reader, deferred, scope);
             reader.onerror = onError(reader, deferred, scope);
-            return reader;
-        };
 
-        var readAsDataURL = function(file, scope) {
-            var deferred = $q.defer();
-            var reader = getReader(deferred, scope);
             reader.readAsDataURL(file);
             return deferred.promise;
         };
-
         return {
             readAsDataUrl: readAsDataURL
         };
@@ -45,8 +39,8 @@ function BlogService($http) {
         getArticle: function(name, id) {
             return $http.get('/post/getArticle/' + name + '/' + id);
         },
-        getAllArticles: function(name) {
-            return $http.get('/post/getAllArticles/' + (name || ''));
+        getAllArticles: function(index, name) {
+            return $http.get('/post/getAllArticles/' + index + '/' + (name || ''));
         },
         register: function(user) {
             return $http.post('/user/register/', user);

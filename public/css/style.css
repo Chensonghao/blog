@@ -3,34 +3,65 @@ body {
 }
 
 .blog-article {
-	font-size: 18px;
+    font-size: 18px;
     max-width: 70%;
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
     display: inline-block;
 }
-.blog-article ~ div{
-	 display: inline-block;
-	 float: right;
+
+.blog-article ~ div {
+    display: inline-block;
+    float: right;
 }
-#editor{
-	display: none;
+
+#editor {
+    display: none;
 }
-.mk{
-    padding:0;
+
+.mk {
+    padding: 0;
 }
-.mk ul{
+
+.mk ul {
     list-style: none;
     margin-left: 0;
     padding-left: 0;
 }
-.mk li{
-    padding:10px 5px;
+
+.mk li {
+    padding: 10px 5px;
 }
-.error{
-    color:red;
+
+.error {
+    color: red;
 }
-.fg-gray{
-    color:gray;
+
+.fg-gray {
+    color: gray;
+}
+
+.pagination {
+    margin: 0;
+}
+
+.font16 {
+    font-size: 16px;
+}
+
+.side-user {
+    cursor: pointer;
+}
+
+.userImg {
+    border-radius: 3px;
+    margin: 0 5px;
+}
+
+#imgPreview {
+    max-width: 300px;
+    max-height: 300px;
+    margin: 0 auto;
+    display: block;
 }

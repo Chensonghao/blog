@@ -2,6 +2,11 @@ var mongodb = require('./db'),
     crypto = require('crypto'),
     jwt = require("jsonwebtoken"),
     settings = require('../settings'),
+    gm = require('gm'),
+    fs = require('fs'),
+    imageMagick = gm.subClass({
+        imageMagick: true
+    }),
     collection = mongodb('users', {
         name: {
             type: String,
@@ -179,5 +184,33 @@ exports.unAuthorize = function(req, res, next) {
         next();
     }
 }
-
+exports.upload = function(req, res) {
+    console.log('&************************',req.files);
+    return res.json(true);
+    // var path = req.files.img.path;
+    // var size = req.files.img.size;
+    // // if (sz > 2 * 1024 * 1024) {
+    // //     fs.unlink(path, function() { //fs.unlink 删除用户上传的文件
+    // //         res.end('1');
+    // //     });
+    // // }
+    // if (req.files.img.type.split('/')[0] != 'image') {
+    //     fs.unlink(path, function() {
+    //         res.end('2');
+    //     });
+    // } else {
+    //     imageMagick(path)
+    //         .resize(48, 48, '!') //加('!')强行把图片缩放成对应尺寸48*48！
+    //         .autoOrient()
+    //         .write('public/images/user/' + req.files.img.name, function(err) {
+    //             if (err) {
+    //                 console.log(err);
+    //                 res.end();
+    //             }
+    //             fs.unlink(path, function() {
+    //                 return res.end('3');
+    //             });
+    //         });
+    // }
+}
 exports.getUser = getuser;

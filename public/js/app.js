@@ -3,12 +3,15 @@ angular.module('Blog', ['ui.router', 'ui.bootstrap', 'ngStorage'])
         $rootScope.$state = $state;
         $rootScope.$stateParams = $stateParams;
 
-        /*ui-router会自动缓存模板，
-          如果不需要缓存，则执行以下代码*/
         var stateChangeSuccess = $rootScope.$on('$stateChangeSuccess', stateChangeSuccess);
 
-        function stateChangeSuccess($rootScope) {
-            $templateCache.removeAll();
+        function stateChangeSuccess(event, toState, toParams, fromState, fromParams) {
+            $rootScope.previousState = fromState.name;
+            $rootScope.previousParams = fromParams;
+            /*ui-router会自动缓存模板，
+          以下两个模板需要登录后才能访问，所以不予缓存*/
+            $templateCache.remove('/settingView');
+            $templateCache.remove('/postView');
         }
     }])
     .config(['$stateProvider', '$urlRouterProvider', '$httpProvider', function($stateProvider, $urlRouterProvider, $httpProvider) {
@@ -83,11 +86,6 @@ angular.module('Blog', ['ui.router', 'ui.bootstrap', 'ngStorage'])
                         templateUrl: '/sideView',
                         controller: 'SideCtrl',
                         controllerAs: 'side'
-                    },
-                    'header@index': {
-                        templateUrl: '/headerView',
-                        controller: 'HeaderCtrl',
-                        controllerAs: 'header'
                     },
                     'main@index': {
                         templateUrl: '/settingView',

@@ -1,3 +1,4 @@
+<div class="alert alert-danger" role="alert" ng-bind="list.errorMsg" ng-show="list.errorMsg"></div>
 <div class="panel panel-default" ng-hide="list.errorMsg">
     <div class="panel-heading">
         <span ng-hide="list.isUserPage">全部帖子</span>
@@ -8,6 +9,8 @@
             <a class="blog-article" href="javascript:;" ng-bind="article.title" ng-click="list.viewArticle(article.name,article._id)"></a>
             <div ng-bind="article.time | date :'yyyy/MM/dd HH:mm' "></div>
         </li>
+        <li class="list-group-item" ng-show="list.articleCount>20">
+            <uib-pagination total-items="list.articleCount" items-per-page="20" ng-model="list.currentPage" ng-change="list.pageChanged()" previous-text="上一页" next-text="下一页"></uib-pagination>
+        </li>
     </ul>
 </div>
-<div class="alert alert-danger" role="alert" ng-bind="list.errorMsg" ng-show="list.errorMsg"></div>
