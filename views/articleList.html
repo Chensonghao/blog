@@ -6,6 +6,9 @@
     </div>
     <ul class="list-group">
         <li class="list-group-item" ng-repeat="article in list.articles">
+            <span class="user" ng-click="list.stateToUser(article.name)">
+                <img src="images/default.png" alt="头像" class="userImg userImg-small">
+            </span>
             <a class="blog-article" href="javascript:;" ng-bind="article.title" ng-click="list.viewArticle(article.name,article._id)"></a>
             <div ng-bind="article.time | date :'yyyy/MM/dd HH:mm' "></div>
         </li>

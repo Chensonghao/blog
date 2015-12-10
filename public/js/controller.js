@@ -148,14 +148,19 @@ function ArticleCtrl(BlogService, pubSubService, $location) {
     }
 }
 
-ListCtrl.$inject = ['BlogService', '$location'];
+ListCtrl.$inject = ['BlogService', '$location', '$state'];
 /*@ngInject*/
-function ListCtrl(BlogService, $location) {
+function ListCtrl(BlogService, $location, $state) {
     var vm = this;
     var params = $location.path().split('/');
     var name = '';
     vm.isUserPage = false;
     vm.name = '';
+    vm.stateToUser = function(name) {
+        $state.go('index.user', {
+            name: name
+        });
+    }
     vm.viewArticle = function(name, id) {
         $location.path('/user/' + name + '/' + id);
     }

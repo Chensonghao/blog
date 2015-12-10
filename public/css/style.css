@@ -1,8 +1,5 @@
-body {
-    font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
-}
-
 .blog-article {
+    vertical-align: -10px;
     font-size: 18px;
     max-width: 70%;
     overflow: hidden;
@@ -11,8 +8,9 @@ body {
     display: inline-block;
 }
 
-.blog-article ~ div {
+.blog-article + div {
     display: inline-block;
+    margin-top: 10px;
     float: right;
 }
 
@@ -50,13 +48,18 @@ body {
     font-size: 16px;
 }
 
-.side-user {
+.user {
     cursor: pointer;
 }
 
 .userImg {
     border-radius: 3px;
     margin: 0 5px;
+}
+
+.userImg-small {
+    width: 30px;
+    height: 30px;
 }
 
 #imgPreview {
