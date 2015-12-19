@@ -1,5 +1,4 @@
 var mongodb = require('./db'),
-    ObjectID = require('mongodb').ObjectID,
     marked = require('marked'),
     collection = mongodb('posts', {
         name: {
@@ -83,7 +82,7 @@ exports.getAllArticles = function(req, res) {
 exports.getArticle = function(req, res) {
     collection.findOne({
         "name": req.params.name,
-        "_id": ObjectID.isValid(req.params.id) ? ObjectID(req.params.id) : new ObjectID()
+        "_id": req.params.id
     }, function(err, doc) {
         if (err) {
             console.log(err);

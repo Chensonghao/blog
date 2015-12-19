@@ -1,4 +1,4 @@
-angular.module('Blog', ['ui.router', 'ui.bootstrap', 'ngStorage'])
+angular.module('Blog', ['ui.router', 'ui.bootstrap', 'ngStorage', 'angularFileUpload'])
     .run(['$rootScope', '$state', '$stateParams', '$templateCache', function($rootScope, $state, $stateParams, $templateCache) {
         $rootScope.$state = $state;
         $rootScope.$stateParams = $stateParams;
@@ -139,7 +139,7 @@ interceptors.$inject = ['$q', '$localStorage', '$rootScope'];
 /*@ngInject*/
 function interceptors($q, $localStorage, $rootScope) {
     return {
-        request: function(config) {
+        'request': function(config) {
             config.headers = config.headers || {};
             var user = $localStorage.user;
             if (user) {
@@ -148,7 +148,7 @@ function interceptors($q, $localStorage, $rootScope) {
             }
             return config;
         },
-        response: function(response) {
+        'response': function(response) {
             var token = response.headers('authorization'),
                 localUser = $localStorage.user;
             if (token && localUser) {
@@ -160,7 +160,7 @@ function interceptors($q, $localStorage, $rootScope) {
             }
             return $q.resolve(response);
         },
-        responseError: function(response) {
+        'responseError': function(response) {
             if (response.status === 401) {
                 if ($localStorage.user) {
                     delete $localStorage.user;

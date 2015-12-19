@@ -6,9 +6,7 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var routes = require('./routes/index');
 
-var session = require('express-session');
 var settings = require('./settings');
-var mongoStore = require('connect-mongo')(session);
 var app = express();
 
 // view engine setup
@@ -28,18 +26,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/components', express.static(path.join(__dirname, 'components')));
 app.engine('html', require('ejs').renderFile);
 
-app.use(session({
-    secret: settings.cookieSecret,
-    key: settings.db, 
-    cookie: {
-        maxAge: 1000 * 60 * 60 * 24 * 30 //30 days
-    },
-    store: new mongoStore({
-        db: settings.db,
-        host: settings.host,
-        port: settings.port
-    })
-}));
+
 routes(app);
 
 // catch 404 and forward to error handler

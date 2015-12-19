@@ -185,6 +185,8 @@ exports.unAuthorize = function(req, res, next) {
     }
 }
 exports.upload = function(req, res) {
+    console.log('&************************',JSON.stringify(req.body));
+    console.log('&************************',req.file);
     console.log('&************************',req.files);
     return res.json(true);
     // var path = req.files.img.path;

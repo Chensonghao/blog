@@ -16,13 +16,21 @@ angular.module('Blog')
                 });
             };
         };
+        var onProgress = function(reader, scope) {
+            return function(event) {
+                scope.$broadcast('fileProgress', {
+                    total: event.total,
+                    loaded: event.loaded
+                });
+            }
+        }
         var readAsDataURL = function(file, scope) {
             var deferred = $q.defer();
 
             var reader = new FileReader();
             reader.onload = onLoad(reader, deferred, scope);
             reader.onerror = onError(reader, deferred, scope);
-
+            reader.onprogress = onProgress(reader, scope);
             reader.readAsDataURL(file);
             return deferred.promise;
         };

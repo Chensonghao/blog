@@ -84,6 +84,7 @@ SettingCtrl.$inject = ['BlogService', 'FileReader', '$scope', '$http'];
 /*@ngInject*/
 function SettingCtrl(BlogService, FileReader, $scope, $http) {
     $scope.getFile = function() {
+        $scope.progress = 0;
         FileReader.readAsDataUrl($scope.file, $scope)
             .then(function(result) {
                 $scope.imageSrc = result;
@@ -104,20 +105,48 @@ function SettingCtrl(BlogService, FileReader, $scope, $http) {
                     }
                 });
             });
+
+        $scope.$on('fileProgress', function(e, progress) {
+            $scope.progress = progress.loaded / progress.total;
+        });
     };
+    $scope.onFileSelect = function($files) {
+        console.log(1);
+        console.log($file[0]);
+    }
     $scope.upload = function() {
         var fd = new FormData();
         fd.append("f", "qq");
-        fd.append("file", $scope.myFile);
+        console.log($scope.file);
+        fd.append("file", $scope.file);
         $http({
             method: 'POST',
             url: '/imgUpload',
-            data: fd,
+            data: {
+                model: {
+                    a: "1"
+                },
+                file: $scope.file
+            },
             headers: {
                 'Content-Type': undefined
             },
-            transformRequest: angular.identity
+            transformRequest: function(data) {
+                var formData = new FormData();
+                formData.append("model",angular.toJson(data.model));
+                formData.append("file",data.file);
+                return formData;
+            }
         });
+        // $http({
+        //     method: 'POST',
+        //     url: '/imgUpload',
+        //     data: fd,
+        //     headers: {
+        //         'Content-Type': undefined
+        //     },
+        //     transformRequest: angular.identity
+        // });
     }
 }
 
@@ -213,14 +242,13 @@ SideCtrl.$inject = ['$localStorage', 'pubSubService', '$location', '$state'];
 function SideCtrl($localStorage, pubSubService, $location, $state) {
     var vm = this;
     var params = $location.path().split('/'),
-        user = $localStorage.user,
-        isLogin = user !== null;
+        user = $localStorage.user;
 
     vm.title = '';
     vm.name = '';
     vm.showUser = false;
     vm.showLoginBtn = false;
-    vm.showPostBtn = isLogin;
+    vm.showPostBtn = user;
     vm.stateToUser = function() {
         $state.go('index.user', {
             name: vm.name
@@ -250,7 +278,7 @@ function SideCtrl($localStorage, pubSubService, $location, $state) {
     function showUser() {
         vm.showUser = true;
         vm.title = '用户信息';
-        if (isLogin) {
+        if (user) {
             vm.name = user.name;
             vm.showLoginBtn = false;
         } else {
