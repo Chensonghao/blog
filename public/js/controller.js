@@ -7,9 +7,7 @@ angular.module('Blog')
     .controller('HeaderCtrl', HeaderCtrl)
     .controller('SideCtrl', SideCtrl)
     .controller('PostCtrl', PostCtrl)
-    .controller('UploadCtrl', ['BlogService', function(BlogService) {
-
-    }])
+    .controller('ArticleDeleteCtrl', ArticleDeleteCtrl)
     .controller('CommentCtrl', ['BlogService', function(BlogService) {
 
     }]);
@@ -139,9 +137,9 @@ function SettingCtrl(BlogService, FileService, $scope, $http) {
     }
 }
 
-ArticleCtrl.$inject = ['BlogService', 'pubSubService', '$location', '$localStorage'];
+ArticleCtrl.$inject = ['BlogService', 'pubSubService', '$location', '$localStorage', '$state', '$uibModal'];
 /*@ngInject*/
-function ArticleCtrl(BlogService, pubSubService, $location, $localStorage) {
+function ArticleCtrl(BlogService, pubSubService, $location, $localStorage, $state, $uibModal) {
     var vm = this;
     var params = $location.path().split('/');
     if (params.length == 4 && params[1] == 'user') {
@@ -156,11 +154,23 @@ function ArticleCtrl(BlogService, pubSubService, $location, $localStorage) {
                 vm.name = article.name;
                 vm.title = article.title;
                 vm.content = article.content;
-                vm.removeArticle=function(){
-
+                vm.deleteArticle = function() {
+                    var modalInstance = $uibModal.open({
+                        templateUrl: 'deleteArticleModal',
+                        controller: 'ArticleDeleteCtrl',
+                        controllerAs: 'adc',
+                        resolve: {
+                            articleId: function() {
+                                return article._id;
+                            }
+                        }
+                    });
                 }
-                vm.editArticle=function(){
-                    
+
+                vm.editArticle = function() {
+                    $state.go('index.post', {
+                        id: article._id
+                    });
                 }
                 pubSubService.publish('notFind', false);
             } else {
@@ -171,6 +181,21 @@ function ArticleCtrl(BlogService, pubSubService, $location, $localStorage) {
             console.log(err);
             vm.articles = [];
         });
+    }
+}
+
+ArticleDeleteCtrl.$inject = ['$modalInstance', 'articleId', 'BlogService'];
+/*@ngInject*/
+function ArticleDeleteCtrl($modalInstance, articleId, BlogService) {
+    this.confirmDelete = function() {
+        BlogService.deleteArticle(articleId).then(function() {
+            window.location.href = '/';
+        }, function(err) {
+            console.log(err);
+        });
+    }
+    this.cancelDelete = function() {
+        $modalInstance.close();
     }
 }
 
@@ -292,8 +317,28 @@ function PostCtrl(BlogService, $localStorage, $location) {
     var vm = this;
     vm.errorMsg = '';
     var editor = new Editor();
+    //初始化编辑器
     editor.render(document.getElementById('editor'));
 
+    var params = $location.path().split('/'),
+        articleId = '';
+    if (params.length === 3 && params[2]) {
+        //文章id
+        articleId = params[2];
+        BlogService.getArticleForEdit(articleId).then(function(data) {
+            var article = data.data;
+            if (article) {
+                vm.title = article.title;
+                editor.codemirror.setValue(article.content);
+
+            } else {
+                vm.errorMsg = '未找到相关话题。';
+            }
+        }, function(err) {
+            console.log(err);
+            vm.errorMsg = '未找到相关话题。';
+        });
+    }
     this.postSubmit = function() {
         if (!vm.title || !vm.title.trim()) {
             vm.errorMsg = '请填写标题！';
@@ -308,7 +353,8 @@ function PostCtrl(BlogService, $localStorage, $location) {
             BlogService.postArticle({
                 name: user.name,
                 title: vm.title,
-                content: value
+                content: value,
+                id: articleId
             }).then(function(res) {
                 if (res.data === false) {
                     vm.errorMsg = '发表失败！';

@@ -7,10 +7,21 @@
         </div>
         <div class="fg-gray mt5 font17" ng-show="article.enableEdit">
             <i class="glyphicon glyphicon-edit pointer mr20" ng-click="article.editArticle()"></i>
-            <i class="glyphicon glyphicon-trash pointer" ng-click="article.removeArticle()"></i>
+            <i class="glyphicon glyphicon-trash pointer" ng-click="article.deleteArticle()"></i>
         </div>
     </div>
     <div class="panel-body" ng-bind-html="article.content | toHtml">
     </div>
 </div>
 <div class="alert alert-danger" role="alert" ng-bind="article.errorMsg" ng-show="article.errorMsg"></div>
+<script type="text/ng-template" id="deleteArticleModal">
+    <div modal="articleDelete">
+        <div class="modal-body">
+            <h3>您确定要删除该话题吗？</h3>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-danger ok" ng-click="adc.confirmDelete()">删除</button>
+            <button class="btn btn-warning cancel" ng-click="adc.cancelDelete()">取消</button>
+        </div>
+    </div>
+</script>

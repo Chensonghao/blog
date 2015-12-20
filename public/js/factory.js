@@ -11,6 +11,9 @@ function BlogService($http) {
         getArticle: function(name, id) {
             return $http.get('/post/getArticle/' + name + '/' + id);
         },
+        getArticleForEdit: function(id) {
+            return $http.get('/post/getArticleForEdit/' + id);
+        },
         getAllArticles: function(index, name) {
             return $http.get('/post/getAllArticles/' + index + '/' + (name || ''));
         },
@@ -22,6 +25,9 @@ function BlogService($http) {
         },
         postArticle: function(article) {
             return $http.post('/post/postArticle/', article);
+        },
+        deleteArticle: function(id) {
+            return $http.delete('/post/deleteArticle/' + id);
         }
     }
 }

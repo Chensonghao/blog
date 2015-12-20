@@ -30,9 +30,6 @@ marked.setOptions({
     }
 });
 
-function queryArticles(query, callback) {
-
-}
 exports.getAllArticles = function(req, res) {
     var user = require('./user');
     var query = {},
@@ -94,18 +91,76 @@ exports.getArticle = function(req, res) {
         return res.json(doc);
     });
 }
-exports.postArticle = function(req, res) {
-    var post = new collection({
-        name: req.body.name,
-        title: req.body.title,
-        content: req.body.content,
-        time: new Date()
-    });
-    post.save(function(err, article) {
+exports.getArticleForEdit = function(req, res) {
+    collection.findOne({
+        "_id": req.params.id
+    }, function(err, doc) {
         if (err) {
             console.log(err);
             return res.json(false);
         }
-        return res.json(article._id);
+        return res.json(doc);
     });
+}
+exports.postArticle = function(req, res) {
+    var articleId = req.body['id'],
+        title = req.body.title,
+        content = req.body.content;
+    //修改
+    if (articleId) {
+        collection.findOne({
+            "_id": articleId
+        }, function(err, article) {
+            if (err) {
+                console.log(err);
+                return res.json(false);
+            }
+            article.title = title;
+            article.content = content;
+            article.save(function(err, article) {
+                if (err) {
+                    console.log(err);
+                    return res.json(false);
+                }
+                return res.json(article._id);
+            });
+        });
+    }
+    //新增
+    else {
+        var article = new collection({
+            name: req.body.name,
+            title: title,
+            content: content,
+            time: new Date()
+        });
+        article.save(function(err, article) {
+            if (err) {
+                console.log(err);
+                return res.json(false);
+            }
+            return res.json(article._id);
+        });
+    }
+}
+
+exports.deleteArticle = function(req, res) {
+    var id = req.params.id;
+    if (id) {
+        collection.findById(id, function(err, article) {
+            if (err) {
+                console.log(err);
+                res.json(false);
+            } else {
+                article.remove(function(err) {
+                    if (err) {
+                        console.log(err);
+                        res.json(false);
+                    } else {
+                        res.json(true);
+                    }
+                });
+            }
+        });
+    }
 }

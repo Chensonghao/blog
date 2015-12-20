@@ -95,7 +95,7 @@ angular.module('Blog', ['ui.router', 'ui.bootstrap', 'ngStorage'])
                 }
             })
             .state('index.post', {
-                url: '^/post',
+                url: '^/post/{id}',
                 views: {
                     'side@index': {
                         templateUrl: '/markdownView'
