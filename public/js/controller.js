@@ -139,9 +139,9 @@ function SettingCtrl(BlogService, FileService, $scope, $http) {
     }
 }
 
-ArticleCtrl.$inject = ['BlogService', 'pubSubService', '$location'];
+ArticleCtrl.$inject = ['BlogService', 'pubSubService', '$location', '$localStorage'];
 /*@ngInject*/
-function ArticleCtrl(BlogService, pubSubService, $location) {
+function ArticleCtrl(BlogService, pubSubService, $location, $localStorage) {
     var vm = this;
     var params = $location.path().split('/');
     if (params.length == 4 && params[1] == 'user') {
@@ -149,11 +149,19 @@ function ArticleCtrl(BlogService, pubSubService, $location) {
         var id = params[3];
         BlogService.getArticle(name, id).then(function(data) {
             var article = data.data;
-            if (article) {
+            var user = $localStorage.user;
+            if (article && user && user.name) {
+                vm.enableEdit = user.name === name;
                 vm.time = article.time;
                 vm.name = article.name;
                 vm.title = article.title;
                 vm.content = article.content;
+                vm.removeArticle=function(){
+
+                }
+                vm.editArticle=function(){
+                    
+                }
                 pubSubService.publish('notFind', false);
             } else {
                 vm.errorMsg = '未找到相关话题。';

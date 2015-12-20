@@ -115,6 +115,11 @@ angular.module('Blog', ['ui.router', 'ui.bootstrap', 'ngStorage'])
                         controller: 'SideCtrl',
                         controllerAs: 'side'
                     },
+                    'main@index': {
+                        templateUrl: '/listView',
+                        controller: 'ListCtrl',
+                        controllerAs: 'list'
+                    }
                 }
             })
             .state('index.article', {
