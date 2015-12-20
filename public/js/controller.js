@@ -80,12 +80,17 @@ function RegisterCtrl(BlogService, $localStorage, $location) {
     }
 }
 
-SettingCtrl.$inject = ['BlogService', 'FileReader', '$scope', '$http'];
+SettingCtrl.$inject = ['BlogService', 'FileService', '$scope', '$http'];
 /*@ngInject*/
-function SettingCtrl(BlogService, FileReader, $scope, $http) {
+function SettingCtrl(BlogService, FileService, $scope, $http) {
+    $scope.x1 = 0;
+    $scope.y1 = 0;
+    $scope.x2 = 0;
+    $scope.y2 = 0;
+
     $scope.getFile = function() {
         $scope.progress = 0;
-        FileReader.readAsDataUrl($scope.file, $scope)
+        FileService.readAsDataUrl($scope.file, $scope)
             .then(function(result) {
                 $scope.imageSrc = result;
                 $('#imgPreview').imgAreaSelect({
@@ -98,10 +103,10 @@ function SettingCtrl(BlogService, FileReader, $scope, $http) {
                     minWidth: 48,
                     minHeight: 48,
                     onSelectEnd: function(img, selection) {
-                        $('input[name="x1"]').val(selection.x1);
-                        $('input[name="y1"]').val(selection.y1);
-                        $('input[name="x2"]').val(selection.x2);
-                        $('input[name="y2"]').val(selection.y2);
+                        $scope.x1 = selection.x1;
+                        $scope.y1 = selection.y1;
+                        $scope.x2 = selection.x2;
+                        $scope.y2 = selection.y2;
                     }
                 });
             });
@@ -110,43 +115,27 @@ function SettingCtrl(BlogService, FileReader, $scope, $http) {
             $scope.progress = progress.loaded / progress.total;
         });
     };
-    $scope.onFileSelect = function($files) {
-        console.log(1);
-        console.log($file[0]);
-    }
+
     $scope.upload = function() {
         var fd = new FormData();
-        fd.append("f", "qq");
-        console.log($scope.file);
-        fd.append("file", $scope.file);
+        fd.append("file", $scope.headImg);
+        fd.append('x1', $scope.x1);
+        fd.append('y1', $scope.y1);
+        fd.append('x2', $scope.x2);
+        fd.append('y2', $scope.y2);
         $http({
             method: 'POST',
             url: '/imgUpload',
-            data: {
-                model: {
-                    a: "1"
-                },
-                file: $scope.file
-            },
+            data: fd,
             headers: {
                 'Content-Type': undefined
             },
-            transformRequest: function(data) {
-                var formData = new FormData();
-                formData.append("model",angular.toJson(data.model));
-                formData.append("file",data.file);
-                return formData;
-            }
+            transformRequest: angular.identity
+        }).success(function() {
+            window.location.reload();
+        }).error(function(err) {
+            console.log(err);
         });
-        // $http({
-        //     method: 'POST',
-        //     url: '/imgUpload',
-        //     data: fd,
-        //     headers: {
-        //         'Content-Type': undefined
-        //     },
-        //     transformRequest: angular.identity
-        // });
     }
 }
 
@@ -271,6 +260,7 @@ function SideCtrl($localStorage, pubSubService, $location, $state) {
                 vm.showUser = true;
                 vm.title = '作者';
                 vm.name = params[2];
+                vm.userImg = 'images/headers/' + params[2] + '.png';
             }
         });
     }
@@ -280,6 +270,7 @@ function SideCtrl($localStorage, pubSubService, $location, $state) {
         vm.title = '用户信息';
         if (user) {
             vm.name = user.name;
+            vm.userImg = 'images/headers/' + user.name + '.png';
             vm.showLoginBtn = false;
         } else {
             vm.showLoginBtn = true;

@@ -2,15 +2,10 @@
     <div class="panel-heading">头像上传</div>
     <div class="panel-body" style="min-height:300px;">
         <div class="col-md-4">
-            <input type="file" ng-file-select="onFileSelect()" accept="image/*" class="btn btn-default" />
-            <input type="hidden" name="x1" value="" />
-            <input type="hidden" name="y1" value="" />
-            <input type="hidden" name="x2" value="" />
-            <input type="hidden" name="y2" value="" />
+            <input type="file" file-model="headImg" accept="image/*" class="btn btn-default" />
         </div>
         <div class="col-md-8 text-center">
             <img id="imgPreview" ng-src="{{imageSrc}}" />
-            <b>进度：</b><input type="text" value="{{progress}}">
             <br>
             <button class="btn btn-primary" ng-click="upload()" ng-show="imageSrc">&nbsp;上传&nbsp;</button>
         </div>

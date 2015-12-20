@@ -90,6 +90,7 @@ exports.register = function(req, res) {
                         err: err
                     });
                 }
+                fs.createReadStream('public/images/headers/default.png').pipe(fs.createWriteStream('public/images/headers/' + user1.name + '.png'));
                 return res.json({
                     user: user1
                 })
@@ -185,34 +186,32 @@ exports.unAuthorize = function(req, res, next) {
     }
 }
 exports.upload = function(req, res) {
-    console.log('&************************',JSON.stringify(req.body));
-    console.log('&************************',req.file);
-    console.log('&************************',req.files);
-    return res.json(true);
-    // var path = req.files.img.path;
-    // var size = req.files.img.size;
-    // // if (sz > 2 * 1024 * 1024) {
-    // //     fs.unlink(path, function() { //fs.unlink 删除用户上传的文件
-    // //         res.end('1');
-    // //     });
-    // // }
-    // if (req.files.img.type.split('/')[0] != 'image') {
-    //     fs.unlink(path, function() {
-    //         res.end('2');
-    //     });
-    // } else {
-    //     imageMagick(path)
-    //         .resize(48, 48, '!') //加('!')强行把图片缩放成对应尺寸48*48！
-    //         .autoOrient()
-    //         .write('public/images/user/' + req.files.img.name, function(err) {
-    //             if (err) {
-    //                 console.log(err);
-    //                 res.end();
-    //             }
-    //             fs.unlink(path, function() {
-    //                 return res.end('3');
-    //             });
-    //         });
-    // }
+    var username = req.headers['username'];
+    if (!username) {
+        return res.json(false);
+    }
+    var file = req.files.file,
+        path = file.path,
+        x1 = req.body.x1,
+        y1 = req.body.y1,
+        x2 = req.body.x2,
+        y2 = req.body.y2,
+        width = x2 - x1;
+    console.log(req.body);
+    if (file.type.split('/')[0] != 'image') {
+        return res.json(false);
+    } else {
+        imageMagick(path)
+            .resize(200)
+            .crop(width, width, x1, y1)
+            .resize(48, 48, '!')
+            .write('public/images/headers/' + username + '.png', function(err) {
+                if (err) {
+                    console.log(err);
+                    return res.json(false);
+                }
+                return res.json(true);
+            });
+    }
 }
 exports.getUser = getuser;

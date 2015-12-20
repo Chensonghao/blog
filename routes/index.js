@@ -1,5 +1,7 @@
 var Article = require('../models/article'),
-    User = require('../models/user');
+    User = require('../models/user'),
+    multiparty = require('connect-multiparty'),
+    multipartyMiddleware = multiparty();
 
 module.exports = function(app) {
     app.get('/', function(req, res) {
@@ -38,7 +40,7 @@ module.exports = function(app) {
         res.render('markdown.html');
     });
 
-    app.post('/imgUpload', User.upload);
+    app.post('/imgUpload', multipartyMiddleware, User.authorize, User.upload);
     app.post('/user/register', User.register);
     app.post('/user/login', User.login);
     app.get('/post/getArticle/:name/:id', Article.getArticle);
