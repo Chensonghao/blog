@@ -2,7 +2,7 @@
 
 > * NodeJS Express
 > * mongoose操作Mongodb
-> * AngularJS最为前端框架
+> * AngularJS作为前端框架
 > * angular-ui-router实现路由机制、视图嵌套
 > * json web token实现权限认证
 > * imagemagick实现用户头像上传剪裁
