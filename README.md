@@ -11,7 +11,9 @@
 # 开始
 
 运行以下命令安装依赖：
-  ```npm install & bower install```
+  ```
+  npm install & bower install
+  ```
 
 安装头像上传功能依赖:
 ```
