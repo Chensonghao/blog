@@ -4,6 +4,11 @@
             <div class="navbar-header">
                 <a class="navbar-brand" ui-sref="index">Blog</a>
             </div>
+            <form ng-submit="header.search()" class="navbar-form navbar-left" role="search">
+                <div class="form-group">
+                    <input type="text" name="keyword" class="form-control" placeholder="Search" ng-model="header.keyword"/>
+                </div>
+            </form>
             <ul class="nav navbar-nav navbar-right">
                 <li>
                     <a ui-sref="index">首页</a>

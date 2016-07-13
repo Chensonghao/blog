@@ -14,8 +14,12 @@ function BlogService($http) {
         getArticleForEdit: function(id) {
             return $http.get('/post/getArticleForEdit/' + id);
         },
-        getAllArticles: function(index, name) {
-            return $http.get('/post/getAllArticles/' + index + '/' + (name || ''));
+        getAllArticles: function(index, name, keyword) {
+            return $http.post('/post/getAllArticles/', {
+                index: index,
+                name: (name || ''),
+                keyword: (keyword || '')
+            });
         },
         register: function(user) {
             return $http.post('/user/register/', user);

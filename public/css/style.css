@@ -1,4 +1,6 @@
-
+html, body {
+    height: 100%;
+}
 .blog-article {
     vertical-align: -9px;
     font-size: 18px;
@@ -8,52 +10,230 @@
     text-overflow: ellipsis;
     display: inline-block;
 }
-
-.blog-article + div {
+.blog-article+ div {
     display: inline-block;
     margin-top: 7px;
     float: right;
 }
-
 #editor {
     display: none;
 }
-
 .mk {
     padding: 0;
 }
-
 .mk ul {
     list-style: none;
     margin-left: 0;
     padding-left: 0;
 }
-
 .mk li {
     padding: 10px 5px;
 }
-
 .pagination {
     margin: 0;
 }
-
 .user {
     cursor: pointer;
 }
-
 .userImg {
     border-radius: 3px;
     margin: 0 5px;
 }
-
 .userImg-small {
     width: 30px;
     height: 30px;
 }
-
 #imgPreview {
     width: 200px;
     /*max-height: 300px;*/
     margin: 0 auto;
     display: block;
+}
+.a404-body {
+    background: #cf7114 url('../images/bg_body.png') left top repeat-x;
+    text-align: center;
+    height: 100%;
+}
+.a404-header {
+    background: url('../images/bg_top.png') left top repeat-x;
+    padding-top: 50px;
+}
+.a404-content {
+    background: url('../images/bg_footprints.png') center 220px no-repeat;
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
+.a404-smash_page {
+    font-size: 30px;
+    line-height: 38px;
+    font-weight: normal;
+    color: #000;
+    height: 320px;
+    width: 260px;
+    text-indent: -9999em;
+    margin: 0 auto;
+    background: url('../images/smash_sprites02.png') no-repeat;
+    background-position: -520px bottom;
+}
+.a404-smash_page> a {
+    display: block;
+    height: 100%;
+    outline: none;
+    text-decoration: none;
+    color: #fff;
+}
+.a404-smash {
+    width: 100%;
+    height: 420px;
+    overflow: hidden;
+    position: absolute;
+    margin: 0 auto;
+    bottom: -135px;
+    left: 0;
+}
+.a404-smash img {
+    display: block;
+}
+.a404-skull {
+    cursor: pointer;
+    width: 560px;
+    margin: 0 auto;
+    background: #F00;
+    position: relative;
+}
+.a404-eyes {
+    position: absolute;
+    background: #FFF;
+    top: 170px;
+    left: 200px;
+    width: 237px;
+    height: 117px;
+    overflow: hidden;
+}
+#a404-pupils {
+    position: absolute;
+    top: 5px;
+    left: 17px;
+}
+#a404-hilites {
+    position: absolute;
+    top: 10px;
+    left: 17px;
+}
+.a404-face {
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+@-webkit-keyframes aojiao {
+    0%{
+        bottom:-98px;
+        left:-50px
+    }
+    20%{
+        bottom:-28px;
+        left:50px
+    }
+    40%{
+        bottom:-5px;
+        left:-50px
+    }
+    60%{
+        bottom:-58px;
+        left:70px
+    }
+    60{
+        bottom:-105px;
+        left:-40px
+    }
+    100{
+        bottom:-135px;
+        left:0px
+    }
+}
+@-moz-keyframes aojiao {
+    0%{
+        bottom:-98px;
+        left:-50px
+    }
+    20%{
+        bottom:-28px;
+        left:50px
+    }
+    40%{
+        bottom:-5px;
+        left:-50px
+    }
+    60%{
+        bottom:-58px;
+        left:70px
+    }
+    60{
+        bottom:-105px;
+        left:-40px
+    }
+    100{
+        bottom:-135px;
+        left:0px
+    }
+}
+@-ms-keyframes aojiao {
+    0%{
+        bottom:-98px;
+        left:-50px
+    }
+    20%{
+        bottom:-28px;
+        left:50px
+    }
+    40%{
+        bottom:-5px;
+        left:-50px
+    }
+    60%{
+        bottom:-58px;
+        left:70px
+    }
+    60{
+        bottom:-105px;
+        left:-40px
+    }
+    100{
+        bottom:-135px;
+        left:0px
+    }
+}
+@keyframes aojiao {
+    0%{
+        bottom:-98px;
+        left:-50px
+    }
+    20%{
+        bottom:-28px;
+        left:50px
+    }
+    40%{
+        bottom:-5px;
+        left:-50px
+    }
+    60%{
+        bottom:-58px;
+        left:70px
+    }
+    60{
+        bottom:-105px;
+        left:-40px
+    }
+    100{
+        bottom:-135px;
+        left:0px
+    }
+}
+.aoaojiao{
+    -webkit-animation: aojiao 500ms ease-out;
+    -moz-animation: aojiao 500ms ease-out;
+    -ms-animation: aojiao 500ms ease-out;
+    -o-animation: aojiao 500ms ease-out;
+    animation: aojiao 500ms ease-out;
 }

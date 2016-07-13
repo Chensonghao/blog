@@ -16,12 +16,33 @@ angular.module('Blog', ['ui.router', 'ui.bootstrap', 'ngStorage'])
     }])
     .config(['$stateProvider', '$urlRouterProvider', '$httpProvider', function($stateProvider, $urlRouterProvider, $httpProvider) {
         $urlRouterProvider
-            .when('/qwe', '/login')
-            .when('/register', '/register')
-            .otherwise('/');
+            .otherwise('/404');
         $stateProvider
             .state('index', {
                 url: '/',
+                views: {
+                    '': {
+                        templateUrl: '/bodyView'
+                    },
+                    'header@index': {
+                        templateUrl: '/headerView',
+                        controller: 'HeaderCtrl',
+                        controllerAs: 'header'
+                    },
+                    'side@index': {
+                        templateUrl: '/sideView',
+                        controller: 'SideCtrl',
+                        controllerAs: 'side'
+                    },
+                    'main@index': {
+                        templateUrl: '/listView',
+                        controller: 'ListCtrl',
+                        controllerAs: 'list'
+                    }
+                }
+            })
+            .state('index.search', {
+                url: '^/search/{keyword}',
                 views: {
                     '': {
                         templateUrl: '/bodyView'
@@ -137,6 +158,16 @@ angular.module('Blog', ['ui.router', 'ui.bootstrap', 'ngStorage'])
                     }
                 }
             })
+            .state('404', {
+                url: '/404',
+                views: {
+                    '': {
+                        templateUrl: '/notFoundView',
+                        controller: 'NotFoundCtrl',
+                        controllerAs: 'notFound'
+                    }
+                }
+            });
         $httpProvider.interceptors.push(interceptors);
     }]);
 

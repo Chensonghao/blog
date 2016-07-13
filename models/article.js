@@ -33,11 +33,17 @@ marked.setOptions({
 exports.getAllArticles = function(req, res) {
     var user = require('./user');
     var query = {},
-        username = req.params.name,
-        index = req.params.index;
-    if (username) {
+        keyword = req.body.keyword,
+        username = req.body.name,
+        index = req.body.index;
+    if (username!=='') {
         query.name = username;
     }
+    if (keyword!=='') {
+        var pattern = new RegExp(keyword,'i');
+        query.title = pattern;
+    }
+    console.log(query);
     collection.count(function(err, count) {
         if (err) {
             console.log(err);
@@ -143,7 +149,6 @@ exports.postArticle = function(req, res) {
         });
     }
 }
-
 exports.deleteArticle = function(req, res) {
     var id = req.params.id;
     if (id) {

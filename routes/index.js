@@ -7,8 +7,16 @@ module.exports = function(app) {
     app.get('/', function(req, res) {
         res.render('index.html');
     });
-
-
+    app.get('/notFoundView', function(req, res) {
+        var aa = [1, 2];
+        var ran = Math.random() * 10;
+        if(ran.toFixed(0)%2 === 0){
+            res.render('404.html');
+        }
+        else{
+            res.render('404_zero.html');
+        }
+    });
     app.get('/registerView', User.unAuthorize, function(req, res) {
         res.render('register.html');
     });
@@ -39,14 +47,12 @@ module.exports = function(app) {
     app.get('/markdownView', function(req, res) {
         res.render('markdown.html');
     });
-
     app.post('/imgUpload', multipartyMiddleware, User.authorize, User.upload);
     app.post('/user/register', User.register);
     app.post('/user/login', User.login);
     app.get('/post/getArticle/:name/:id', Article.getArticle);
     app.get('/post/getArticleForEdit/:id', User.authorize, Article.getArticleForEdit);
-    app.get('/post/getAllArticles/:index', Article.getAllArticles);
-    app.get('/post/getAllArticles/:index/:name', Article.getAllArticles);
+    app.post('/post/getAllArticles', Article.getAllArticles);
     app.post('/post/postArticle', User.authorize, Article.postArticle);
     app.delete('/post/deleteArticle/:id', User.authorize, Article.deleteArticle);
 };

@@ -8,9 +8,7 @@ angular.module('Blog')
     .controller('SideCtrl', SideCtrl)
     .controller('PostCtrl', PostCtrl)
     .controller('ArticleDeleteCtrl', ArticleDeleteCtrl)
-    .controller('CommentCtrl', ['BlogService', function(BlogService) {
-
-    }]);
+    .controller('NotFoundCtrl', NotFoundCtrl);
 
 LoginCtrl.$inject = ['BlogService', '$localStorage', '$rootScope', '$state'];
 /*@ngInject*/
@@ -220,6 +218,10 @@ function ListCtrl(BlogService, $location, $state) {
         vm.isUserPage = true;
         vm.name = name;
     }
+    var keyword = '';
+    if (params.length == 3 && params[1] == 'search') {
+        keyword = params[2];
+    }
     vm.currentPage = 1;
     vm.pageChanged = function() {
         initArticles();
@@ -227,7 +229,7 @@ function ListCtrl(BlogService, $location, $state) {
     initArticles();
 
     function initArticles() {
-        BlogService.getAllArticles(vm.currentPage - 1, name).then(function(res) {
+        BlogService.getAllArticles(vm.currentPage - 1, name, keyword).then(function(res) {
             var data = res.data;
             if (data === false) {
                 vm.errorMsg = '发生错误。';
@@ -245,11 +247,17 @@ function ListCtrl(BlogService, $location, $state) {
     }
 }
 
-HeaderCtrl.$inject = ['$localStorage', '$location'];
+HeaderCtrl.$inject = ['$state', '$localStorage', '$location'];
 /*@ngInject*/
-function HeaderCtrl($localStorage, $location) {
+function HeaderCtrl($state, $localStorage, $location) {
     var vm = this;
+    vm.keyword = '';
     vm.nologin = $localStorage.user == null;
+    vm.search = function() {
+        $state.go('index.search', {
+            keyword: vm.keyword
+        });
+    }
     vm.logout = function() {
         if ($localStorage.user) {
             delete $localStorage.user;
@@ -368,5 +376,46 @@ function PostCtrl(BlogService, $localStorage, $location) {
         } else {
             vm.errorMsg = '请填写内容！';
         }
+    }
+}
+
+function NotFoundCtrl() {
+    var vm = this;
+    vm.clr = true;
+    vm.ao = function(e) {
+        var smash = document.getElementById('smash');
+        var className = smash.className;
+        if (className.indexOf('aoaojiao') === -1) {
+            smash.className += ' ' + 'aoaojiao';
+        }
+        if (vm.clr) {
+            vm.clr = false;
+            setTimeout(function() {
+                smash.className = smash.className.replace('aoaojiao', '');
+                vm.clr = true;
+            }, 500);
+        }
+    }
+    vm.mousemove = function(e) {
+        var x = e.clientX,
+            y = e.clientY,
+            width = document.body.clientWidth,
+            height = document.body.clientHeight,
+            percentX = x / width,
+            percentY = y / height,
+            minPupilsX = -10,
+            maxPupilsX = 44,
+            minHilitesX = 10,
+            maxHilitesX = 23,
+            minPupilsY = -19,
+            maxPupilsY = 27,
+            minHilitesY = 4,
+            maxHilitesY = 15;
+        var pupils = document.getElementById('a404-pupils'),
+            hilites = document.getElementById('a404-hilites');
+        pupils.style.left = (54 * percentX - 10) + 'px';
+        hilites.style.left = (13 * percentX + 10) + 'px';
+        pupils.style.top = (46 * percentY - 19) + 'px';
+        hilites.style.top = (11 * percentY + 4) + 'px';
     }
 }
