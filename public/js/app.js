@@ -16,6 +16,7 @@ angular.module('Blog', ['ui.router', 'ui.bootstrap', 'ngStorage'])
     }])
     .config(['$stateProvider', '$urlRouterProvider', '$httpProvider', function($stateProvider, $urlRouterProvider, $httpProvider) {
         $urlRouterProvider
+            .when('','/')
             .otherwise('/404');
         $stateProvider
             .state('index', {
